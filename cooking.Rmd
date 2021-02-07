@@ -71,18 +71,52 @@ head(subjectDt)
 ```
 
 
-create factor var for each excerise 
+create factor var for each exercise 
 
 ```{r}
+
+#read test and train data from y_test.txt amd y_train.txt
 exeDt <- fread(testExe)
 exeDt <- rbind(exeDt,fread(trainExe))
-setnames(subjectDt,"execeriseid")
 
-str(exeDt)
-head(exeDt)
+print(exeDt)
 
+# set the table name to be execeriseid
+setnames(exeDt,"execeriseid")
+
+# read in excerise from activity_labels.txt
+execerise = paste(dataDir,"activity_labels.txt",sep = "")
+exefactorDt <- fread(execerise)
+setnames(exefactorDt,"V2", "execerise")
+factor(exefactorDt$execerise)
+
+
+str(exefactorDt)
+
+#setkey(exeDt,execeriseid)
+#setkey(exefactorDt,V1)
+# merge 2 tables without sorting
+execerisDT<- merge(exeDt,exefactorDt, by.x = "execeriseid", by.y = "V1",all.x = T, sort = F)
+
+str(execerisDT)
+head(execerisDT, n=1000)
 ```
 
+```{r}
+
+# Cbind all data tables together ,,, not very elegant ..:) does the job
+
+resultDT <-data.table()
+resultDT <- cbind(resultDT,subjectDt)
+resultDT <- cbind(resultDT,execerisDT)
+resultDT <- cbind(resultDT,dt)
+
+fwrite(resultDT,"tidiedData.txt")
+
+str(resultDT)
+head(resultDT)
+
+```
 
 
 
