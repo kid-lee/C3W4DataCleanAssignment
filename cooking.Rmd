@@ -9,41 +9,90 @@ Try executing this chunk by clicking the *Run* button within the chunk or by pla
 
 ```{r}
 library(janitor)
+library(data.table)
 
 dataDir ="UCI HAR Dataset/"
 #feature text location
 features = paste(dataDir,"features.txt",sep = "")
 # subject location
-trainSbj = paste(dataDir,"train/subject_train.txt",sep = "")
 testSbj = paste(dataDir,"test/subject_test.txt",sep = "")
+trainSbj = paste(dataDir,"train/subject_train.txt",sep = "")
 
 # Exercise location
-trainExe = paste(dataDir,"train/y_train.txt",sep = "")
 testExe = paste(dataDir,"test/y_test.txt",sep = "")
+trainExe = paste(dataDir,"train/y_train.txt",sep = "")
 
 # data record by device
-trainData = paste(dataDir,"train/X_train.txt",sep = "")
 testData = paste(dataDir,"test/X_test.txt",sep = "")
+trainData = paste(dataDir,"train/X_train.txt",sep = "")
+
 
 
 ```
+
+read data, test then train
+```{r readData}
+dt <- data.table()
+
+
+#read data 
+#dt <- fread(testData, nrows=150)
+# read test data, train data in the data table
+
+dt <- fread(testData)
+dt <- rbind(dt,fread(trainData))
+
+#read colum names from features.text
+featureNames <- fread(features)
+setnames(dt,as.character(featureNames$V2))
+
+# subset mean std var with regX -- 86 var in total out of 561
+dt <- dt[, names(dt) %like% "(.*)[Ss]td(.*)|(.*)[mM]ean(.*)", with=F]
+
+
+
+ncol(dt)
+str(dt)
+names(dt)
+head(dt,n=20)
+
+
+```
+
+read in subject names test, then train
+```{r}
+
+subjectDt <- fread(testSbj)
+subjectDt <- rbind(subjectDt,fread(trainSbj))
+setnames(subjectDt,"studysubjects")
+
+str(subjectDt)
+head(subjectDt)
+```
+
+
+create factor var for each excerise 
+
+```{r}
+exeDt <- fread(testExe)
+exeDt <- rbind(exeDt,fread(trainExe))
+setnames(subjectDt,"execeriseid")
+
+str(exeDt)
+head(exeDt)
+
+```
+
+
+
+
 
 
 ```{r}
-df <- read.csv(testData,sep=" ", nrows=150)
-#df <- read.csv("X_test_Vi.txt",sep=" ", nrows=10)
-df <- remove_empty(df, which = c("cols"), quiet = TRUE)
-
-# 667 col 
-# 561
-
-ncol(df)
-
-str(df)
-names(df)
-head(df,n=20)
+resultDtIndex <- grep(featureNames$V2, pattern = "(.*)[Ss]td(.*)|(.*)[mM]ean(.*)")
 
 ```
+
 
 
 
@@ -51,7 +100,7 @@ head(df,n=20)
 
 print(features)
 
-featuresDF<- read.csv(features)
+featuresDF<- fread(features)
 
 lapply(featuresDF, grep(pattern = "(.*)mean(.*)"))
 
