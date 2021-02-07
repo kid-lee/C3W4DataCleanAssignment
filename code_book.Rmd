@@ -9,7 +9,7 @@ output: html_notebook
 2. read test data -- X_test.txt, X_train.txt to df-data
 3. Subset df, keep mean(), std()
 4. read subject_test.txt, subject_train.txt into df_subject -- ID the subject 
-5. read y_test.txt, x_test.txt into df_excerise -- ID the excerise
+5. read y_test.txt, x_test.txt into df_excerise, mutate with text lable -- ID the exercise
 6. merge df_subject, df_excerise, df-data
 
 
