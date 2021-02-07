@@ -30,15 +30,18 @@ testData = paste(dataDir,"test/X_test.txt",sep = "")
 
 
 ```{r}
-#df <- read.csv(testData,sep=" ", nrows=10)
-df <- read.csv("X_test_Vi.txt",sep=" ", nrows=10)
+df <- read.csv(testData,sep=" ", nrows=150)
+#df <- read.csv("X_test_Vi.txt",sep=" ", nrows=10)
 df <- remove_empty(df, which = c("cols"), quiet = TRUE)
+
+# 667 col 
+# 561
 
 ncol(df)
 
 str(df)
 names(df)
-head(df)
+head(df,n=20)
 
 ```
 
@@ -52,11 +55,11 @@ featuresDF<- read.csv(features)
 
 lapply(featuresDF, grep(pattern = "(.*)mean(.*)"))
 
-length(grep(featuresDF$X1.tBodyAcc.mean...X, pattern = "(.*)std(.*)"))
+length(grep(featuresDF$X1.tBodyAcc.mean...X, pattern = "(.*)[Ss]td(.*)"))
 
-length(grep(featuresDF$X1.tBodyAcc.mean...X, pattern = "(.*)mean(.*)"))
+length(grep(featuresDF$X1.tBodyAcc.mean...X, pattern = "(.*)[mM]ean(.*)"))
 
-length(grep(featuresDF$X1.tBodyAcc.mean...X, pattern = "(.*)std(.*)|(.*)mean(.*)"))
+length(grep(featuresDF$X1.tBodyAcc.mean...X, pattern = "(.*)[Ss]td(.*)|(.*)[mM]ean(.*)"))
 
 #junes<-grep("end\\:(.*)[Jj]une",masterDf$Special.Notes)
 
