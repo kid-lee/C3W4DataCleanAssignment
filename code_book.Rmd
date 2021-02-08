@@ -5,26 +5,101 @@ output: html_notebook
 
 # Approch
 
-1. read features.txt in, create df-data with each feature ad column name
-2. read test data -- X_test.txt, X_train.txt to df-data
-3. Subset df, keep mean(), std()
-4. read subject_test.txt, subject_train.txt into df_subject -- ID the subject 
-5. read y_test.txt, x_test.txt into df_excerise, mutate with text lable -- ID the exercise
-6. merge df_subject, df_excerise, df-data
+
+1. read test data -- X_test.txt, X_train.txt to df-data
+
+```{r}
+##Processing the DATA
+
+dt <- data.table()
+
+#read data (you can try 150 roll for a start) 
+#dt <- fread(testData, nrows=150)
+
+# read test data, train data in the data table
+
+dt <- fread(testData)
+dt <- rbind(dt,fread(trainData))
+
+#read colum names from features.text, set the column names according feature
+featureNames <- fread(features)
+setnames(dt,as.character(featureNames$V2))
+
+# subset mean std var with regX -- 89 var in total out of 561 (What did you get?)
+dt <- dt[, names(dt) %like% "(.*)[Ss]td(.*)|(.*)[mM]ean(.*)", with=F]
+
+```
 
 
-# Final dataset structure as followed
+2. Read the subject ID as a column 
+
+```{r}
+## Reading the subject id as column
+
+subjectDt <- fread(testSbj)
+subjectDt <- rbind(subjectDt,fread(trainSbj))
+setnames(subjectDt,"studysubjects")
 
 
-## Subject
-  
-  
-## Escerise ID
+```
 
-## Escerise Name 
 
-## Recroded data
-  
-  1. 
-  2.
-  
+3. Read Excerise from both test and traning data, merger with the excerise ID <-> Name table. 
+
+```{r}
+## Read the Excerises and 
+
+#read test and train data from y_test.txt amd y_train.txt
+exeDt <- fread(testExe)
+exeDt <- rbind(exeDt,fread(trainExe))
+
+
+# set the table name to be exerciseid
+setnames(exeDt,"execeriseid")
+
+# read in exercise from activity_labels.txt
+execerise = paste(dataDir,"activity_labels.txt",sep = "")
+exefactorDt <- fread(execerise)
+setnames(exefactorDt,"V2", "execerise")
+factor(exefactorDt$execerise)
+
+
+#setkey(exeDt,execeriseid)
+#setkey(exefactorDt,V1)
+# merge 2 tables without sorting according to execeriseid's index
+execerisDT<- merge(exeDt,exefactorDt, by.x = "execeriseid", by.y = "V1",all.x = T, sort = F)
+
+```
+
+
+4. cbind all together
+
+```{r}
+# Cbind all data tables together ,,, not very elegant ..:) does the job
+
+resultDT <-data.table()
+resultDT <- cbind(resultDT,subjectDt)
+resultDT <- cbind(resultDT,execerisDT)
+resultDT <- cbind(resultDT,dt)
+fwrite(resultDT,outputFile)
+```
+
+5. group/summarize resultDT, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
+
+```{r}
+#data set represent average of each variable for each activity and each subject
+meanSbjExc<- resultDT %>% group_by(studysubjects,execerise) %>% summarise(across(names(dt),mean,na.rm = TRUE))
+# save to text file
+fwrite(meanSbjExc,meanSbjExcData)
+```
+
+
+
+# Final dataset structure as followed 
+
+Found 89 column of the data inc either std or mean 
+
+```{r}
+str(resultDT)
+```
+

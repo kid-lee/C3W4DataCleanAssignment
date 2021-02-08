@@ -116,7 +116,23 @@ fwrite(resultDT,"tidiedData.txt")
 str(resultDT)
 head(resultDT)
 
+library(dplyr)
+library(sqldf)
+
+
+finalresult<- resultDT %>% group_by(studysubjects,execerise)%>% summarise(across(names(dt),mean,na.rm = TRUE))
+
+#finalresult<- resultDT %>% group_by(studysubjects)  %>% group_by(execeriseid) %>% summarise(across(names(dt),mean,na.rm = TRUE))
+
+#finalresult <- split(finalresult, finalresult$studysubjects)
+
+print(finalresult)
+
+print(finalresult[1])
+str(finalresult)
+
 ```
+
 
 
 

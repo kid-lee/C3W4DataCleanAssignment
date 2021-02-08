@@ -1,11 +1,14 @@
 # main script to run
 library(data.table)
+library(dplyr)
 
 # define where the files are! change "dataDir" to you dir for data to run 
 
 dataDir ="UCI HAR Dataset/"
 
-outputFile ="myData.txt"
+tidyData ="myData.txt"
+meanSbjExcData ="meanSbjExcData.txt"
+
 
 #feature text location
 features = paste(dataDir,"features.txt",sep = "")
@@ -80,6 +83,13 @@ resultDT <- cbind(resultDT,subjectDt)
 resultDT <- cbind(resultDT,execerisDT)
 resultDT <- cbind(resultDT,dt)
 
-fwrite(resultDT,outputFile)
+# write data to working dir with name defined in the beginning of the script
+fwrite(resultDT,tidyData)
+
+#data set represent average of each variable for each activity and each subject
+meanSbjExc<- resultDT %>% group_by(studysubjects,execerise) %>% summarise(across(names(dt),mean,na.rm = TRUE))
+# save to text file
+fwrite(meanSbjExc,meanSbjExcData)
+
 
 
