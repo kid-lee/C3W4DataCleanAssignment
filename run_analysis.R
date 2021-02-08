@@ -89,7 +89,8 @@ fwrite(resultDT,tidyData)
 #data set represent average of each variable for each activity and each subject
 meanSbjExc<- resultDT %>% group_by(studysubjects,execerise) %>% summarise(across(names(dt),mean,na.rm = TRUE))
 # save to text file
-fwrite(meanSbjExc,meanSbjExcData)
+#fwrite(meanSbjExc,meanSbjExcData)
+write.table(meanSbjExc,meanSbjExcData,row.name=FALSE)
 
 
 
