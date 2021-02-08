@@ -96,11 +96,21 @@ write.table(meanSbjExc,meanSbjExcData,row.name=FALSE)
 
 
 
-# Final dataset structure as followed 
+# Cleaned dataset structure as followed 
 
 Found 89 column of the data inc either std or mean 
 
 ```{r}
 str(resultDT)
+```
+
+# extracted data by grouping
+
+```{r}
+
+meanSbjExc<- resultDT %>% group_by(studysubjects,execerise) %>% summarise(across(names(dt),mean,na.rm = TRUE))
+
+head(meanSbjExc)
+
 ```
 

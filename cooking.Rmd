@@ -165,3 +165,11 @@ length(grep(featuresDF$X1.tBodyAcc.mean...X, pattern = "(.*)[Ss]td(.*)|(.*)[mM]e
 head(featuresDF)
 ```
 
+
+```{r}
+DT <- fread("Test")
+head(DT, n=100)
+str(DT)
+
+```
+
